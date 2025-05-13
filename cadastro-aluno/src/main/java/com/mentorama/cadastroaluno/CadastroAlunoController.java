@@ -1,73 +1,54 @@
 package com.mentorama.cadastroaluno;
 
+import com.mentorama.cadastroaluno.exception.AlunoNotFoundException;
+import com.mentorama.cadastroaluno.service.AlunoService;
+
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.stream.Collectors;
-import java.util.ArrayList;
 import java.util.List;
 
 @RestController
 @RequestMapping("/aluno")
 public class CadastroAlunoController {
-    
-    private final List<Aluno> alunos;
-    
-    public CadastroAlunoController() {
-        this.alunos = new ArrayList<Aluno>();
+
+    private final AlunoService alunoService;
+
+    @Autowired
+    public CadastroAlunoController(AlunoService alunoService) {
+        this.alunoService = alunoService;
     }
-    
+
     @PostMapping
-    public ResponseEntity<Integer> add(@RequestBody final Aluno aluno){
-        if(aluno.getId() == null){
-            aluno.setId(alunos.size() + 1);
-        }
-        alunos.add(aluno);
-        return new ResponseEntity<>(aluno.getId(), HttpStatus.CREATED) ;
+    public ResponseEntity<Integer> add(@RequestBody final Aluno aluno) {
+        Integer id = alunoService.addAluno(aluno);
+        return new ResponseEntity<>(id, HttpStatus.CREATED);
     }
 
     @GetMapping
     public List<Aluno> findAll(
             @RequestParam(required = false) String aluno,
             @RequestParam(required = false) Integer idade) {
-
-        return alunos.stream()
-                .filter(alu -> (aluno == null || alu.getNome().contains(aluno)))
-                .filter(alu -> (idade == null || alu.getIdade().equals(idade)))
-                .collect(Collectors.toList());
+        return alunoService.findAllAlunos(aluno, idade);
     }
 
     @GetMapping("/{id}")
-    public Aluno findById(@PathVariable("id") Integer id){
-        return this.alunos.stream()
-                .filter(alu -> alu.getId().equals(id))
-                .findFirst()
-                .orElse(null);
+    public ResponseEntity<Aluno> findById(@PathVariable("id") Integer id) {
+        Aluno aluno = alunoService.findAlunoById(id);
+        return new ResponseEntity<>(aluno, HttpStatus.OK);
     }
 
     @PutMapping("/{id}")
     public ResponseEntity<Aluno> update(@PathVariable("id") Integer id, @RequestBody Aluno alunoAtualizado) {
-        Aluno alunoExistente = alunos.stream()
-                .filter(alu -> alu.getId().equals(id))
-                .findFirst()
-                .orElse(null);
-        
-        if (alunoExistente == null) {
-            return new ResponseEntity<>(HttpStatus.NO_CONTENT);
-        }
-        
-        alunoExistente.setNome(alunoAtualizado.getNome());
-        alunoExistente.setIdade(alunoAtualizado.getIdade());
-        alunoExistente.setId(id);
-
-        return new ResponseEntity<>(alunoExistente, HttpStatus.OK);
+        Aluno alunoUpdated = alunoService.updateAluno(id, alunoAtualizado);
+        return new ResponseEntity<>(alunoUpdated, HttpStatus.OK);
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity delete(@PathVariable("id") Integer id){
-        alunos.removeIf(alu -> alu.getId().equals(id));
+    public ResponseEntity<Void> delete(@PathVariable("id") Integer id) {
+        alunoService.deleteAluno(id);
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
-    
 }
