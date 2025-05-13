@@ -24,16 +24,60 @@ Projeto desenvolvido em Java 17 com Spring Boot, com o objetivo de gerenciar o c
 ## 📄 Estrutura do projeto
 
 ```
-src/
-├── main/
-│   ├── java/
-│   │   └── com/mentorama/cadastroaluno
-│   │       ├── controller/    # Controladores REST
-│   │       ├── model/         # Entidades JPA
-│   │       └── Application.java
-│   └── resources/
-│       ├── application.properties  # Configurações do Spring
+src
+└── main
+└── java
+└── com.mentorama.cadastroaluno
+├── exception
+│ ├── AlunoNotFoundException.java
+│ └── GlobalExceptionHandler.java
+├── service
+│ └── AlunoService.java
+├── Aluno.java
+├── CadastroAlunoApplication.java
+├── CadastroAlunoController.java
+└── ServletInitializer.java
 ```
+
+---
+
+## ✅ Funcionalidades
+
+- ✅ Cadastro de alunos  
+- ✅ Listagem de alunos com filtro por nome e idade  
+- ✅ Busca de aluno por ID  
+- ✅ Atualização de dados de aluno  
+- ✅ Remoção de aluno  
+
+---
+
+## 🔗 Endpoints
+
+| Método HTTP | Endpoint        | Descrição                              |
+|-------------|------------------|----------------------------------------|
+| `POST`      | `/aluno`         | Adiciona um novo aluno                 |
+| `GET`       | `/aluno`         | Lista todos os alunos (com filtros)    |
+| `GET`       | `/aluno/{id}`    | Busca um aluno específico pelo ID      |
+| `PUT`       | `/aluno/{id}`    | Atualiza os dados de um aluno existente|
+| `DELETE`    | `/aluno/{id}`    | Remove um aluno do sistema             |
+
+---
+
+## 🛠️ Implementações
+
+### Refatoração
+
+- Separação da lógica de negócio na camada `AlunoService`.
+- A controller (`CadastroAlunoController`) tornou-se responsável apenas por lidar com as requisições HTTP.
+- Aplicação do padrão de arquitetura em camadas: **Controller → Service**.
+
+### Tratamento de Exceções
+
+- Exceção personalizada: `AlunoNotFoundException`, para casos de aluno não encontrado.
+- Manipulador global: `GlobalExceptionHandler`, responsável por centralizar o tratamento de erros.
+- Respostas com **HTTP 404** e mensagens informativas em casos apropriados.
+
+---
 
 ## ▶️ Como executar
 
